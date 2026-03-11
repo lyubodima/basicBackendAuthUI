@@ -1,0 +1,10 @@
+/* Light overrides that work with Bootstrap 5 dark theme */
+.card {
+  border-radius: 1rem;
+}
+.input-group .form-control:focus {
+  z-index: 3;
+}
+.btn {
+  border-radius: 0.5rem;
+}
