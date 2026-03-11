@@ -1,5 +1,5 @@
-# Одностадийный Dockerfile для Render
-FROM maven:3.9.2-eclipse-temurin-17
+# Stage 1: build
+FROM maven:3.9.2-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
@@ -8,12 +8,16 @@ RUN mvn dependency:go-offline -B
 
 COPY src ./src
 
-# Собираем jar без тестов
 RUN mvn clean package -DskipTests
 
-# Копируем jar в корень /app.jar для запуска
-RUN cp target/Security-0.0.1-SNAPSHOT.jar app.jar
+# Stage 2: runtime
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+# Проверяем, что jar существует
+COPY --from=build /app/target/Security-0.0.1-SNAPSHOT.jar /app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java","-jar","/app.jar"]
